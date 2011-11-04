@@ -14,6 +14,7 @@ module Clearance
     #
     # @return [User, nil]
     def current_user
+      @_current_user ||= user_from_session
       @_current_user ||= user_from_cookie
     end
 
@@ -106,6 +107,12 @@ module Clearance
     end
 
     protected
+
+    def user_from_session
+      if token = session[:remember_token]
+        ::User.find_by_remember_token(token)
+      end
+    end
 
     def user_from_cookie
       if token = cookies[:remember_token]
